@@ -6,7 +6,7 @@ var reducer = (state = {name: 'Anonymous'}, action) => {
    // state = state || {name: 'Anonymous'};
     console.log('New action', action);
     switch (action.type) {
-        case 'CHANGE_TYPE':
+        case 'CHANGE_NAME':
             return {
                 ...state,
                 name: action.name
@@ -15,7 +15,15 @@ var reducer = (state = {name: 'Anonymous'}, action) => {
             return state;
     }
 };
-var store = redux.createStore(reducer);
+var store = redux.createStore(reducer, redux.compose(
+   window.devToolsExtension ? window.devToolsExtension() : f => f
+));
+
+var unsubscribe = store.subscribe(() => {
+    var state = store.getState();
+    console.log('Name is ', state.name);
+    document.getElementById('app').innerHTML = state.name;
+});
 
 var currentState = store.getState();
 console.log('currentState', currentState);
@@ -25,4 +33,10 @@ store.dispatch({
     name: 'George'
 });
 
-console.log('Name should be George', store.getState());
+//unsubscribe();
+
+store.dispatch({
+    type: 'CHANGE_NAME',
+    name: 'Yulia'
+})
+
